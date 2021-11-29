@@ -5,6 +5,9 @@
 #include <vector>
 #include <unordered_map>
 #include <algorithm>
+#include "CacpotBoard.h"
+#include "CacpotBoardSpace.h"
+#include "CacpotBoardSolver.h"
 
 std::string PositionToString(int position)
 {
@@ -150,7 +153,7 @@ std::map<int, std::vector<std::tuple<int, double>>> ConvertPointsToMGP(const std
 
         for (int possibleSum = 6; possibleSum < 25; possibleSum++)
         {
-            double percentage{ positionAndPercentage [possibleSum]};
+            double percentage{ positionAndPercentage[possibleSum] };
 
             int mgpValue{};
 
@@ -165,7 +168,7 @@ std::map<int, std::vector<std::tuple<int, double>>> ConvertPointsToMGP(const std
 
             if (percentage != 0 && mgpValue != 0)
             {
-                positionToMGP[position].push_back({mgpValue, percentage});
+                positionToMGP[position].push_back({ mgpValue, percentage });
             }
         }
 
@@ -182,72 +185,31 @@ void PrintTopThreePercentagesForEachPosition(const std::map<int, std::vector<std
     }
 }
 
+MiniCacpotSolver::CacpotSpace AskForSpaceAndNumber(const std::string& spaceDescription)
+{
+    std::cout << spaceDescription << " x location: ";
+    UINT xLocation{};
+    std::cin >> xLocation;
+
+    std::cout << spaceDescription << " y location: ";
+    UINT yLocation{};
+    std::cin >> yLocation;
+
+    std::cout << spaceDescription << " number: ";
+    UINT numberValue{};
+    std::cin >> numberValue;
+
+    return { xLocation, yLocation, numberValue };
+}
+
 int main(int argc, char** argv)
 {
-    if (argc != 9)
-    {
-        std::cout << "Need 8 arguments" << std::endl;
-        return 0;
-    }
+    MiniCacpotSolver::CacpotBoard board{};
+    board.Insert(AskForSpaceAndNumber("Free number"));
+    board.Insert(AskForSpaceAndNumber("First number"));
+    board.Insert(AskForSpaceAndNumber("Second number"));
+    board.Insert(AskForSpaceAndNumber("Third number"));
 
-    std::vector<int> board{ 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-
-    std::list<int> numbersRemaining{ 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-    std::list<int> numbersRevealed{};
-
-    int firstNumberLocation{ std::stoi(argv[1]) };
-    int firstNumberValue{ std::stoi(argv[2]) };
-    numbersRemaining.remove(firstNumberValue);
-    numbersRevealed.push_back(firstNumberValue);
-
-    int secondNumberLocation{ std::stoi(argv[3]) };
-    int secondNumberValue{ std::stoi(argv[4]) };
-    numbersRemaining.remove(secondNumberValue);
-    numbersRevealed.push_back(secondNumberValue);
-
-    int thirdNumberLocation{ std::stoi(argv[5]) };
-    int thirdNumberValue{ std::stoi(argv[6]) };
-    numbersRemaining.remove(thirdNumberValue);
-    numbersRevealed.push_back(thirdNumberValue);
-
-    int freeNumberLocation{ std::stoi(argv[7]) };
-    int freeNumberValue{ std::stoi(argv[8]) };
-    numbersRemaining.remove(freeNumberValue);
-    numbersRevealed.push_back(freeNumberValue);
-
-    board[firstNumberLocation] = firstNumberValue;
-    board[secondNumberLocation] = secondNumberValue;
-    board[thirdNumberLocation] = thirdNumberValue;
-    board[freeNumberLocation] = freeNumberValue;
-
-    std::map<int, std::vector<int>> possibleValues{};
-
-    int permutationArray[5];
-    int index{};
-    for (auto&& numberRemaining : numbersRemaining)
-    {
-        permutationArray[index++] = numberRemaining;
-    }
-
-    std::map<int, std::vector<int>> sumsToCountOfSums{};
-
-    for (int sumPosition = 0; sumPosition < 8; sumPosition++)
-    {
-        sumsToCountOfSums.insert(std::pair<int, std::vector<int>>(sumPosition, std::vector<int>(25, 0)));
-    }
-
-    auto filledInBoard{ FillBoard(board, permutationArray, 5) };
-    auto calculatedSums{ CalculateSums(filledInBoard) };
-    AddSums(sumsToCountOfSums, calculatedSums);
-
-    while (std::next_permutation(permutationArray, permutationArray + 5))
-    {
-        auto filledInBoard{ FillBoard(board, permutationArray, 5) };
-        auto calculatedSums{ CalculateSums(filledInBoard) };
-        AddSums(sumsToCountOfSums, calculatedSums);
-    }
-
-    auto sumPositionToChance{ CalculateChance(sumsToCountOfSums) };
-    auto pointsToPercentage{ConvertPointsToMGP(sumPositionToChance)};
-    PrintTopThreePercentagesForEachPosition(pointsToPercentage);
+    MiniCacpotSolver::CacpotBoardSolver analyzer(board);
+    auto sumsToChance{analyzer.AnalyzeAllPermutationsOfBoard()};
 }
