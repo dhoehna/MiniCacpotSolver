@@ -179,4 +179,17 @@ namespace MiniCacpotSolver
 
         return m_Spaces[arrayPosition];
     }
+
+    // vector is addressed by SumPosition
+    std::vector<LineTotal> CacpotBoard::SumUpBoard() const
+    {
+        std::vector<LineTotal> totals;
+
+        for (SumPosition sumPosition = c_SumPositionMinimum; sumPosition < c_SumPositionMaximum; sumPosition++)
+        {
+            totals.push_back(GetLineTotalAt(static_cast<SumLine>(sumPosition)));
+        }
+
+        return totals;
+    }
 }

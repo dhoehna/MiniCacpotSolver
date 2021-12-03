@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CacpotBoard.cpp" />
+    <ClCompile Include="CacpotBoardPermutations.cpp" />
     <ClCompile Include="CacpotBoardSolver.cpp" />
     <ClCompile Include="CacpotBoardSpace.cpp" />
     <ClCompile Include="MiniCacpotSolver.cpp" />
@@ -149,10 +150,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CacpotBoard.h" />
+    <ClInclude Include="CacpotBoardPermutations.h" />
     <ClInclude Include="CacpotBoardSolver.h" />
     <ClInclude Include="CacpotBoardSpace.h" />
     <ClInclude Include="CommonEnums.h" />
     <ClInclude Include="CommonTypeDefs.h" />
+    <ClInclude Include="Constants.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

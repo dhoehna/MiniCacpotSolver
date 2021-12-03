@@ -34,7 +34,7 @@ namespace MiniCacpotSolver
         m_Board = board;
     }
 
-    std::vector<CacpotBoard> CacpotBoardSolver::GetAllPermutations() const
+    CacpotBoardPermutations CacpotBoardSolver::GetAllPermutations() const
     {
         std::vector<CacpotBoard> cacpotScores{};
 
@@ -46,6 +46,7 @@ namespace MiniCacpotSolver
         for (auto&& remainingNumber : remainingNumbers)
         {
             tempBoard.Insert(remainingNumber);
+            permutationArray[index++] = remainingNumber;
         }
 
         cacpotScores.push_back(tempBoard);
@@ -62,78 +63,7 @@ namespace MiniCacpotSolver
             cacpotScores.push_back(tempBoard);
         }
 
-        return cacpotScores;
-    }
-
-    // The vector ranges from 0 to 25.
-    // The index of the vector is total from the sum position.
-    // Valid totals are 6 through 24.
-    // positions 0 - 5 are not used and may contain garbage.
-    std::map<SumPosition, std::vector<LineTotal>> CacpotBoardSolver::CountSums(std::vector<CacpotBoard> cacpotBoardPermutations) const
-    {
-        std::map<SumPosition, std::vector<LineTotal>> sumPositionToCountOfSums{};
-
-        // for each permutation
-        // for each sum position
-        // get sum
-        // keep track of the sum for that line and board.
-        // What we want is to say
-        // For the sum position 0 there is an X percent chance
-        // that it will be 6, or 10000MGP.
-        // To answer this question we need to keep track of
-        // Sum position
-        // number of times each sum has come up for that position.
-        // We need a map of the sunPosition.  Each entry has
-        // 1. the value
-        // 2. the number of times it has come up.
-        // Either a map of SumPosition to a list of tuples, or
-        // a list where the index is the SumPosition.
-        // I would call this CacpotPermutations.
-        // Well.  Why not?
-        // CacpotPermutations holds a what we need?
-        // Basically we need a conversion from a list of CacpotBoards
-        // to something above to hold the LinePosition, Value, count of value.
-
-        /*for (auto&& sumPositionToListOfSum : sumPositionToListOfSums)
-        {
-            sumPositionToCountOfSums.insert({ sumPositionToListOfSum.first, std::vector<LineTotal>(25, 0) });
-            for (auto lineTotal = c_SumMinimum; lineTotal <= c_SumMaximum; lineTotal++)
-            {
-                UINT count{};
-                for (auto&& total : sumPositionToListOfSum.second)
-                {
-                    if (total == lineTotal)
-                    {
-                        count++;
-                    }
-                }
-
-                sumPositionToCountOfSums[sumPositionToListOfSum.first][lineTotal] = count;
-            }
-        }*/
-
-        return sumPositionToCountOfSums;
-    }
-
-    std::map<SumPosition, std::vector<double>> CacpotBoardSolver::CalculateLineTotalChances(std::map<SumPosition, std::vector<LineTotal>> SumPositionToCountOfSums) const
-    {
-        std::map<SumPosition, std::vector<double>> sumPostionToSumChance{};
-        UINT numberOfPermutations = static_cast<double>(Factorial(5));
-        for (auto&& sumPositionToCount : SumPositionToCountOfSums)
-        {
-            auto sumPosition{sumPositionToCount.first};
-            sumPostionToSumChance.insert({ sumPosition, std::vector<double>(25, 0) });
-
-            for (LineTotal lineTotal = c_SumMinimum; lineTotal <= c_SumMaximum; lineTotal++)
-            {
-                auto countOfLineTotal{ static_cast<double>(sumPositionToCount.second[lineTotal]) };
-                double chance{static_cast<double>(countOfLineTotal) / numberOfPermutations};
-
-                sumPostionToSumChance[sumPosition][lineTotal] = chance;
-            }
-        }
-
-        return sumPostionToSumChance;
+        return CacpotBoardPermutations{ cacpotScores };
     }
 
     // This returns a map of sum position to
@@ -144,10 +74,9 @@ namespace MiniCacpotSolver
     // Convert any chances that has a chance greater than 0
     // to MGP gained.
     // A vector of cacpot scores.
-    std::map<SumPosition, std::vector<double>> CacpotBoardSolver::AnalyzeAllPermutationsOfBoard() const
+    void CacpotBoardSolver::AnalyzeAllPermutationsOfBoard() const
     {
-        auto sumPositionToListOfSums{ SumUpAllPermutations ()};
-        auto sumPositionToCountOfSums{ CountSums(sumPositionToListOfSums) };
-        return CalculateLineTotalChances (sumPositionToCountOfSums);
+        auto permutations{ GetAllPermutations() };
+        permutations.GetCounts();
     }
 }

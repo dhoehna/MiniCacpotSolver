@@ -211,5 +211,5 @@ int main(int argc, char** argv)
     board.Insert(AskForSpaceAndNumber("Third number"));
 
     MiniCacpotSolver::CacpotBoardSolver analyzer(board);
-    auto sumsToChance{analyzer.AnalyzeAllPermutationsOfBoard()};
+    analyzer.AnalyzeAllPermutationsOfBoard();
 }

@@ -3,9 +3,6 @@
 
 namespace MiniCacpotSolver
 {
-    const UINT c_SumLineMinimum{ 0 };
-    const UINT c_SumLineMaximum{ 7 };
-
     enum SumLine
     {
         TopRow = 0,
